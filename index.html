@@ -963,11 +963,23 @@
     // 渲染跨年夜富貴喜慶背景與燦爛煙花
     function renderFestiveBackground(now) {
       const bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      // 深邃跨年夜色帶金紅光芒
-      bgGrad.addColorStop(0, '#750b14');
-      bgGrad.addColorStop(0.5, '#56050b');
-      bgGrad.addColorStop(1, '#340206');
+      // 大幅提亮：明亮開運正紅與富貴金紅漸層，光鮮亮麗
+      bgGrad.addColorStop(0, '#df1b2a');
+      bgGrad.addColorStop(0.35, '#c81020');
+      bgGrad.addColorStop(0.7, '#a50c18');
+      bgGrad.addColorStop(1, '#800813');
       ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 上方天頂柔和金光擴散，營造璀璨跨年夜空明亮感
+      const glowGrad = ctx.createRadialGradient(
+        canvas.width / 2, 80, 20,
+        canvas.width / 2, 80, canvas.width * 0.9
+      );
+      glowGrad.addColorStop(0, 'rgba(255, 238, 140, 0.25)');
+      glowGrad.addColorStop(0.5, 'rgba(255, 180, 0, 0.12)');
+      glowGrad.addColorStop(1, 'rgba(255, 100, 0, 0)');
+      ctx.fillStyle = glowGrad;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // 定期綻放跨年煙火 (平均每 600-900ms 綻放一顆)
@@ -976,7 +988,7 @@
         lastFireworkSpawn = now;
       }
 
-      // 渲染與更新煙火粒子
+      // 渲染與更新煙火粒子 (提升發光亮度)
       for (let i = bgFireworks.length - 1; i >= 0; i--) {
         const fw = bgFireworks[i];
         fw.x += fw.vx;
@@ -991,10 +1003,10 @@
         }
 
         ctx.save();
-        ctx.globalAlpha = fw.alpha * 0.85;
+        ctx.globalAlpha = Math.min(1, fw.alpha * 1.1);
         ctx.fillStyle = fw.color;
         ctx.shadowColor = fw.color;
-        ctx.shadowBlur = 4;
+        ctx.shadowBlur = 8;
         ctx.beginPath();
         ctx.arc(fw.x, fw.y, fw.radius, 0, Math.PI * 2);
         ctx.fill();
