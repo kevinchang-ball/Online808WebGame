@@ -858,6 +858,8 @@
     let sparrows = [];
     let particles = [];
     let floatingTexts = [];
+    let bgFireworks = []; // 跨年夜背景煙火粒子
+    let lastFireworkSpawn = 0;
     let gameLoopId = null;
     let timerInterval = null;
 
@@ -931,29 +933,73 @@
     });
     window.addEventListener('mouseup', () => { isTouching = false; });
 
-    // 渲染更明亮、喜慶溫潤的遊戲背景
-    function renderFestiveBackground() {
+    // 跨年夜煙火產生器
+    function spawnBackgroundFirework() {
+      const x = 30 + Math.random() * (canvas.width - 60);
+      const y = 50 + Math.random() * (canvas.height * 0.45);
+      const colors = [
+        '#FFE082', '#FFD54F', '#FF6F00', '#FF1744', 
+        '#00E676', '#00E5FF', '#E040FB', '#FFFFFF'
+      ];
+      const fireworkColor = colors[Math.floor(Math.random() * colors.length)];
+      const sparkCount = 18 + Math.floor(Math.random() * 12);
+
+      for (let i = 0; i < sparkCount; i++) {
+        const angle = (Math.PI * 2 / sparkCount) * i + (Math.random() - 0.5) * 0.3;
+        const speed = 1.2 + Math.random() * 2.2;
+        bgFireworks.push({
+          x: x,
+          y: y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          radius: 1.2 + Math.random() * 1.5,
+          color: fireworkColor,
+          alpha: 1,
+          decay: 0.018 + Math.random() * 0.015
+        });
+      }
+    }
+
+    // 渲染跨年夜富貴喜慶背景與燦爛煙花
+    function renderFestiveBackground(now) {
       const bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      // 由暗黑調改為明亮富貴的錦鯉正紅與宮廷金紅漸層
-      bgGrad.addColorStop(0, '#a8161f');
-      bgGrad.addColorStop(0.4, '#870d15');
-      bgGrad.addColorStop(1, '#520409');
+      // 深邃跨年夜色帶金紅光芒
+      bgGrad.addColorStop(0, '#750b14');
+      bgGrad.addColorStop(0.5, '#56050b');
+      bgGrad.addColorStop(1, '#340206');
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.save();
-      // 金黃祥雲微光
-      ctx.fillStyle = 'rgba(255, 235, 59, 0.08)';
-      for (let i = 0; i < 4; i++) {
-        const cx = ((i * 140 + Date.now() * 0.015) % (canvas.width + 120)) - 60;
-        const cy = 90 + i * 110;
-        ctx.beginPath();
-        ctx.arc(cx, cy, 40, 0, Math.PI * 2);
-        ctx.arc(cx + 30, cy - 10, 35, 0, Math.PI * 2);
-        ctx.arc(cx + 60, cy, 40, 0, Math.PI * 2);
-        ctx.fill();
+      // 定期綻放跨年煙火 (平均每 600-900ms 綻放一顆)
+      if (now - lastFireworkSpawn > 750) {
+        spawnBackgroundFirework();
+        lastFireworkSpawn = now;
       }
-      ctx.restore();
+
+      // 渲染與更新煙火粒子
+      for (let i = bgFireworks.length - 1; i >= 0; i--) {
+        const fw = bgFireworks[i];
+        fw.x += fw.vx;
+        fw.y += fw.vy;
+        fw.vy += 0.035; // 輕微重力下墜
+        fw.vx *= 0.98;  // 空氣阻力
+        fw.alpha -= fw.decay;
+
+        if (fw.alpha <= 0) {
+          bgFireworks.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = fw.alpha * 0.85;
+        ctx.fillStyle = fw.color;
+        ctx.shadowColor = fw.color;
+        ctx.shadowBlur = 4;
+        ctx.beginPath();
+        ctx.arc(fw.x, fw.y, fw.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
     }
 
     // 渲染頂部財神爺 (帶左右翻轉與上下浮動)
@@ -1216,10 +1262,12 @@
       state.isPlaying = true;
       state.lastSpawnTime = Date.now();
       state.lastSparrowTime = Date.now();
+      lastFireworkSpawn = Date.now();
       items = [];
       sparrows = [];
       particles = [];
       floatingTexts = [];
+      bgFireworks = [];
 
       document.getElementById('hud-score').innerText = 0;
       document.getElementById('hud-timer').innerText = 60;
@@ -1243,7 +1291,8 @@
       const now = Date.now();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      renderFestiveBackground();
+      // 渲染跨年夜背景與煙火特效
+      renderFestiveBackground(now);
 
       // 財神爺巡遊灑寶
       godOfWealth.x += godOfWealth.speed * godOfWealth.dir;
