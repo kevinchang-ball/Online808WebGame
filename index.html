@@ -24,8 +24,9 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background-color: #1a0104;
+      background-color: #3b0509;
       font-family: 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+      touch-action: none; /* 防止手機瀏覽器滑動時整個視窗被拖行 */
     }
 
     /* 預設放大 125%，符合中老年人閱讀與操作習慣 */
@@ -37,13 +38,13 @@
 
     /* 金光立體文字特效 (中老年人超清晰高對比度) */
     .gold-emboss-text {
-      background: linear-gradient(180deg, #FFF9C4 0%, #FFD54F 35%, #FFB300 70%, #FF8F00 100%);
+      background: linear-gradient(180deg, #FFFDE7 0%, #FFEA00 35%, #FFB300 70%, #FF8F00 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.9));
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7));
     }
     .festive-bg {
-      background: radial-gradient(circle at 50% 25%, #990c14 0%, #68050a 60%, #3a0104 100%);
+      background: radial-gradient(circle at 50% 20%, #c41824 0%, #9e0d16 55%, #63050a 100%);
     }
 
     /* 左右搖晃宮燈動畫 */
@@ -54,24 +55,25 @@
     .swing-lantern {
       animation: lanternSwing 3s ease-in-out infinite alternate;
       transform-origin: top center;
+      transition: opacity 0.3s ease;
     }
 
     /* 包你發大顆立體圓角金按鈕 (適合拇指點擊) */
     .btn-baonifa {
-      background: linear-gradient(180deg, #FFF176 0%, #FFB300 40%, #FF8F00 80%, #E65100 100%);
-      box-shadow: 0 5px 0 #943100, 0 10px 20px rgba(0, 0, 0, 0.5);
+      background: linear-gradient(180deg, #FFF59D 0%, #FFCA28 35%, #FF9800 75%, #E65100 100%);
+      box-shadow: 0 4px 0 #943100, 0 8px 15px rgba(0, 0, 0, 0.4);
       border: 2px solid #FFF9C4;
       text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
       transition: all 0.1s ease;
     }
     .btn-baonifa:active {
-      transform: translateY(3px);
-      box-shadow: 0 2px 0 #943100, 0 5px 10px rgba(0, 0, 0, 0.5);
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #943100, 0 4px 8px rgba(0, 0, 0, 0.4);
     }
     .btn-baonifa:disabled {
-      background: linear-gradient(180deg, #A8A8A8 0%, #757575 100%);
+      background: linear-gradient(180deg, #BDBDBD 0%, #757575 100%);
       box-shadow: none;
-      border: 2px solid #BDBDBD;
+      border: 2px solid #E0E0E0;
       color: #E0E0E0 !important;
       cursor: not-allowed;
       transform: none;
@@ -80,18 +82,22 @@
     /* 呼吸光暈 */
     @keyframes pulseGlow {
       0%, 100% { filter: drop-shadow(0 0 6px #FFD700); }
-      50% { filter: drop-shadow(0 0 18px #FFA000); }
+      50% { filter: drop-shadow(0 0 16px #FFA000); }
     }
     .pulse-glow {
       animation: pulseGlow 1.8s infinite ease-in-out;
     }
 
+    canvas {
+      touch-action: none; /* 嚴格禁止 Canvas 觸發視窗拖移 */
+    }
+
     ::-webkit-scrollbar {
-      width: 6px;
+      width: 4px;
     }
     ::-webkit-scrollbar-thumb {
       background: #FFD54F;
-      border-radius: 6px;
+      border-radius: 4px;
     }
   </style>
 </head>
@@ -100,262 +106,254 @@
   <!-- 滿版直式手機外框 (放大 125% 後完美置中適配) -->
   <div id="app-container" class="relative w-full max-w-[420px] h-full overflow-hidden flex flex-col justify-between select-none shadow-2xl">
     
-    <!-- 新春過年頂部裝飾：宮燈、祥雲、金字橫匾 -->
-    <div class="absolute top-0 left-0 w-full z-30 pointer-events-none flex justify-between items-start px-2 pt-1">
+    <!-- 新春過年頂部裝飾：宮燈、祥雲、金字橫匾 (遊玩時可隱藏) -->
+    <div id="top-decorations" class="absolute top-0 left-0 w-full z-30 pointer-events-none flex justify-between items-start px-2 pt-1 transition-opacity duration-300">
       <!-- 左宮燈 -->
       <div class="swing-lantern flex flex-col items-center">
-        <div class="w-1 h-4 bg-yellow-400"></div>
-        <div class="w-10 h-12 bg-red-600 rounded-2xl border-2 border-yellow-300 shadow-lg flex items-center justify-center relative">
-          <span class="text-sm font-black text-yellow-200">春</span>
-          <div class="absolute -bottom-1.5 w-3 h-3 bg-yellow-400 rounded-full"></div>
+        <div class="w-1 h-3 bg-yellow-400"></div>
+        <div class="w-9 h-11 bg-red-600 rounded-2xl border-2 border-yellow-300 shadow-md flex items-center justify-center relative">
+          <span class="text-xs font-black text-yellow-200">春</span>
+          <div class="absolute -bottom-1 w-2.5 h-2.5 bg-yellow-400 rounded-full"></div>
         </div>
       </div>
 
       <!-- 中間「包你發」大字匾額 -->
-      <div class="mt-1 px-4 py-1.5 bg-gradient-to-b from-red-900 to-black rounded-b-2xl border-b-2 border-x-2 border-yellow-400 shadow-xl flex items-center space-x-1.5">
+      <div class="mt-0.5 px-3 py-1 bg-gradient-to-b from-red-800 to-red-950 rounded-b-xl border-b-2 border-x-2 border-yellow-400 shadow-lg flex items-center space-x-1">
         <span class="text-yellow-400 text-xs">✨</span>
-        <span class="gold-emboss-text text-sm font-black tracking-wider">包你發・新春接寶</span>
+        <span class="gold-emboss-text text-xs font-black tracking-wider">包你發・新春接寶</span>
         <span class="text-yellow-400 text-xs">✨</span>
       </div>
 
       <!-- 右宮燈 -->
       <div class="swing-lantern flex flex-col items-center" style="animation-delay: -1.5s;">
-        <div class="w-1 h-4 bg-yellow-400"></div>
-        <div class="w-10 h-12 bg-red-600 rounded-2xl border-2 border-yellow-300 shadow-lg flex items-center justify-center relative">
-          <span class="text-sm font-black text-yellow-200">福</span>
-          <div class="absolute -bottom-1.5 w-3 h-3 bg-yellow-400 rounded-full"></div>
+        <div class="w-1 h-3 bg-yellow-400"></div>
+        <div class="w-9 h-11 bg-red-600 rounded-2xl border-2 border-yellow-300 shadow-md flex items-center justify-center relative">
+          <span class="text-xs font-black text-yellow-200">福</span>
+          <div class="absolute -bottom-1 w-2.5 h-2.5 bg-yellow-400 rounded-full"></div>
         </div>
       </div>
     </div>
-    <!-- 1. 手機填寫頁 (Screen 1) - 大字版 -->
-    <div id="screen-auth" class="screen absolute inset-0 z-20 flex flex-col justify-between p-5 festive-bg text-white">
-      <div class="mt-14 flex flex-col items-center text-center">
-        <div class="inline-block px-4 py-1 rounded-full bg-red-950 border-2 border-yellow-400 text-xs text-yellow-300 mb-2 font-black tracking-widest shadow">
+
+    <!-- 1. 手機填寫頁 (Screen 1) - 按鈕向上調高，防止溢出或被遮擋 -->
+    <div id="screen-auth" class="screen absolute inset-0 z-20 flex flex-col justify-between p-4 festive-bg text-white">
+      <div class="mt-11 flex flex-col items-center text-center">
+        <div class="inline-block px-3 py-0.5 rounded-full bg-red-900 border border-yellow-400 text-[11px] text-yellow-300 mb-1 font-black tracking-widest shadow">
           過年好運抽大獎
         </div>
-        <h1 class="text-2xl font-black gold-emboss-text tracking-wide pulse-glow">
+        <h1 class="text-xl font-black gold-emboss-text tracking-wide pulse-glow">
           接好運・抽iPhone
         </h1>
-        <p class="text-sm text-yellow-200 font-bold mt-1">
+        <p class="text-xs text-yellow-200 font-bold mt-0.5">
           限時 60 秒拼手速，抱走五星住宿！
         </p>
 
-        <!-- 角色搶先看預覽 (內嵌自給自足向量，保證跨裝置傳閱 100% 顯示) -->
-        <div class="relative my-3 flex items-center justify-center space-x-3">
-          <!-- 財神爺圖示 -->
-          <div id="preview-caishen" class="w-16 h-16 rounded-full bg-red-900/90 border-2 border-yellow-400 p-1 flex items-center justify-center shadow-lg"></div>
-          <div class="text-xl font-black text-yellow-300 animate-pulse">➕</div>
-          <!-- 歡呼黑熊圖示 -->
-          <div id="preview-bear" class="w-16 h-16 rounded-full bg-stone-900/90 border-2 border-yellow-400 p-1 flex items-center justify-center shadow-lg"></div>
+        <!-- 角色預覽圖示 -->
+        <div class="relative my-2 flex items-center justify-center space-x-3">
+          <div id="preview-caishen" class="w-14 h-14 rounded-full bg-red-800/90 border-2 border-yellow-400 p-1 flex items-center justify-center shadow-lg"></div>
+          <div class="text-lg font-black text-yellow-300 animate-pulse">➕</div>
+          <div id="preview-bear" class="w-14 h-14 rounded-full bg-stone-800/90 border-2 border-yellow-400 p-1 flex items-center justify-center shadow-lg"></div>
         </div>
       </div>
 
-      <!-- 表單大字輸入區 (長輩友善大字體與加粗邊框) -->
-      <div class="w-full bg-black/60 backdrop-blur-md p-4 rounded-3xl border-2 border-yellow-400/80 shadow-2xl">
-        <label for="phone-input" class="block text-sm font-black text-yellow-300 mb-1.5 flex items-center justify-between">
+      <!-- 表單大字輸入區 (調小留白使整體上移) -->
+      <div class="w-full bg-black/50 backdrop-blur-md p-3.5 rounded-2xl border-2 border-yellow-400/80 shadow-xl">
+        <label for="phone-input" class="block text-xs font-black text-yellow-300 mb-1 flex items-center justify-between">
           <span>📲 輸入手機號碼 (中獎通知)</span>
         </label>
         <div class="relative">
           <input id="phone-input" type="tel" maxlength="10" placeholder="0912345678"
-            class="w-full py-3.5 px-4 rounded-2xl bg-red-950/90 border-2 border-yellow-400 text-yellow-200 placeholder-red-300/40 font-bold font-mono text-xl tracking-wider focus:outline-none focus:ring-4 focus:ring-yellow-400 transition shadow-inner" />
-          <span id="phone-valid-icon" class="absolute right-3.5 top-3 text-green-400 text-xl font-black hidden">✓</span>
+            class="w-full py-2.5 px-3.5 rounded-xl bg-red-950/90 border-2 border-yellow-400 text-yellow-200 placeholder-red-300/40 font-bold font-mono text-lg tracking-wider focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-inner" />
+          <span id="phone-valid-icon" class="absolute right-3 top-2 text-green-400 text-lg font-black hidden">✓</span>
         </div>
-        <p class="text-xs font-bold text-amber-200 mt-1.5 flex items-center">
-          <span class="mr-1 text-yellow-400 text-sm">🔔</span> 中獎以簡訊通知，請確認號碼正確。
+        <p class="text-[10px] font-bold text-amber-200 mt-1 flex items-center">
+          <span class="mr-1 text-yellow-400 text-xs">🔔</span> 中獎以簡訊通知，請確認號碼正確。
         </p>
 
         <!-- 簡潔精要版個資聲明 -->
-        <div class="mt-3 p-2.5 bg-red-950/80 rounded-xl border border-yellow-600/50 text-[11px] text-stone-200 h-16 overflow-y-auto leading-relaxed">
-          <strong class="text-yellow-300">【個資蒐集告知聲明】</strong><br>
-          本活動由《包你發娛樂城》主辦。收集之手機號碼僅供身分識別、抽獎比對與中獎簡訊寄送，傳輸全程加密保存，絕不作其他用途。
+        <div class="mt-2 p-2 bg-red-950/80 rounded-lg border border-yellow-600/40 text-[10px] text-stone-200 h-12 overflow-y-auto leading-tight">
+          <strong class="text-yellow-300">【個資聲明】</strong> 本活動由《包你發娛樂城》主辦。收集之號碼僅用於識別對獎與中獎簡訊發送，傳輸全程加密，絕不作他用。
         </div>
 
-        <!-- 勾選同意 (大框與大字) -->
-        <div class="mt-3 flex items-center space-x-2.5">
-          <input id="agree-checkbox" type="checkbox" class="w-5 h-5 accent-yellow-400 rounded cursor-pointer">
-          <label for="agree-checkbox" class="text-xs font-bold text-yellow-100 cursor-pointer">
+        <!-- 勾選同意 -->
+        <div class="mt-2 flex items-center space-x-2">
+          <input id="agree-checkbox" type="checkbox" class="w-4 h-4 accent-yellow-400 rounded cursor-pointer">
+          <label for="agree-checkbox" class="text-[11px] font-bold text-yellow-100 cursor-pointer">
             我已閱讀並同意個資條款
           </label>
         </div>
       </div>
 
-      <!-- 送出按鈕 -->
-      <div class="mb-2">
-        <button id="btn-submit-auth" disabled class="btn-baonifa w-full py-3.5 rounded-full text-red-950 font-black text-lg tracking-wider">
+      <!-- 送出按鈕 (向上提升，充足底距防遮擋) -->
+      <div class="mb-4">
+        <button id="btn-submit-auth" disabled class="btn-baonifa w-full py-3 rounded-full text-red-950 font-black text-base tracking-wider">
           下一步：看玩法規則 ➔
         </button>
-        <p class="text-center text-[11px] font-bold text-yellow-300/80 mt-1.5">每組號碼每小時可玩一次</p>
+        <p class="text-center text-[10px] font-bold text-yellow-300/80 mt-1">每組號碼每小時可玩一次</p>
       </div>
     </div>
     <!-- 2. 玩法說明彈窗 (Screen 2) - 簡潔大字圖文版 -->
     <div id="modal-rules" class="screen absolute inset-0 z-20 hidden flex items-center justify-center p-3 bg-black/85 backdrop-blur-md">
-      <div class="w-full max-w-xs festive-bg rounded-3xl p-4 border-2 border-yellow-400 shadow-2xl relative">
-        <div class="text-center mb-2.5">
-          <div class="inline-block px-3 py-0.5 bg-yellow-400 text-red-950 text-xs font-black rounded-full mb-1">
+      <div class="w-full max-w-xs festive-bg rounded-3xl p-3.5 border-2 border-yellow-400 shadow-2xl relative">
+        <div class="text-center mb-2">
+          <div class="inline-block px-3 py-0.5 bg-yellow-400 text-red-950 text-[11px] font-black rounded-full mb-0.5">
             簡單好玩 3 步驟
           </div>
-          <h2 class="text-xl font-black gold-emboss-text">60秒接寶教學</h2>
+          <h2 class="text-lg font-black gold-emboss-text">60秒接寶教學</h2>
         </div>
 
         <!-- 寶物與加分說明 -->
-        <div class="space-y-1.5 bg-black/50 p-2.5 rounded-2xl border border-yellow-500/40">
-          <div class="flex items-center justify-between p-1.5 bg-red-950/70 rounded-xl">
-            <div class="flex items-center space-x-2">
-              <span class="text-xl">🪙</span>
-              <div>
-                <div class="font-black text-yellow-300 text-xs">開運金幣</div>
-              </div>
+        <div class="space-y-1.5 bg-black/40 p-2 rounded-2xl border border-yellow-500/40">
+          <div class="flex items-center justify-between p-1 bg-red-950/70 rounded-lg">
+            <div class="flex items-center space-x-1.5">
+              <span class="text-lg">🪙</span>
+              <span class="font-black text-yellow-300 text-xs">開運金幣</span>
             </div>
-            <span class="text-yellow-400 font-mono font-black text-sm">+10 分</span>
+            <span class="text-yellow-400 font-mono font-black text-xs">+10 分</span>
           </div>
 
-          <div class="flex items-center justify-between p-1.5 bg-red-950/70 rounded-xl">
-            <div class="flex items-center space-x-2">
-              <span class="text-xl">🧧</span>
-              <div>
-                <div class="font-black text-red-300 text-xs">發財紅包</div>
-              </div>
+          <div class="flex items-center justify-between p-1 bg-red-950/70 rounded-lg">
+            <div class="flex items-center space-x-1.5">
+              <span class="text-lg">🧧</span>
+              <span class="font-black text-red-300 text-xs">發財紅包</span>
             </div>
-            <span class="text-yellow-400 font-mono font-black text-sm">+20 分</span>
+            <span class="text-yellow-400 font-mono font-black text-xs">+20 分</span>
           </div>
 
-          <div class="flex items-center justify-between p-1.5 bg-red-950/70 rounded-xl">
-            <div class="flex items-center space-x-2">
-              <span class="text-xl">👑</span>
-              <div>
-                <div class="font-black text-amber-300 text-xs">招財元寶</div>
-              </div>
+          <div class="flex items-center justify-between p-1 bg-red-950/70 rounded-lg">
+            <div class="flex items-center space-x-1.5">
+              <span class="text-lg">👑</span>
+              <span class="font-black text-amber-300 text-xs">招財元寶</span>
             </div>
-            <span class="text-yellow-400 font-mono font-black text-sm">+50 分</span>
+            <span class="text-yellow-400 font-mono font-black text-xs">+50 分</span>
           </div>
 
           <!-- 麻雀突發事件特別標記 -->
-          <div class="flex items-center justify-between p-1.5 bg-yellow-900/60 rounded-xl border-2 border-yellow-400">
-            <div class="flex items-center space-x-2">
-              <div id="rules-sparrow-icon" class="w-6 h-6"></div>
+          <div class="flex items-center justify-between p-1 bg-yellow-950/70 rounded-lg border border-yellow-400">
+            <div class="flex items-center space-x-1.5">
+              <div id="rules-sparrow-icon" class="w-5 h-5"></div>
               <div>
                 <div class="font-black text-yellow-200 text-xs">麻雀叼發財金磚</div>
-                <div class="text-[10px] text-yellow-300">每12秒飛入・高分必搶！</div>
+                <div class="text-[9px] text-yellow-300">每12秒飛入・高分必搶！</div>
               </div>
             </div>
-            <span class="text-yellow-300 font-mono font-black text-base">+150 分</span>
+            <span class="text-yellow-300 font-mono font-black text-sm">+150 分</span>
           </div>
         </div>
 
         <!-- 獎券說明 -->
-        <div class="my-2.5 p-2 bg-red-950/90 rounded-xl border border-yellow-400/60 text-[11px] font-bold text-yellow-100 flex items-center space-x-2">
-          <span class="text-xl">🎫</span>
+        <div class="my-2 p-1.5 bg-red-950/80 rounded-lg border border-yellow-400/60 text-[10px] font-bold text-yellow-100 flex items-center space-x-1.5">
+          <span class="text-base">🎫</span>
           <p class="leading-tight">
-            滿 <strong class="text-yellow-300">800分</strong> 拿 <strong class="text-yellow-300">50張抽獎券</strong>！<br>
-            每多 100 分再加贈 5 張！
+            滿 <strong class="text-yellow-300">800分</strong> 拿 <strong class="text-yellow-300">50張抽獎券</strong>！每多100分再贈5張！
           </p>
         </div>
 
         <!-- 滑動提示與大按鈕 -->
-        <p class="text-center text-xs font-bold text-yellow-300 mb-2.5">
+        <p class="text-center text-[11px] font-bold text-yellow-300 mb-2">
           👈 手指在螢幕「左右滑動」控制黑熊接寶 👉
         </p>
-        <button id="btn-start-countdown" class="btn-baonifa w-full py-3 rounded-full text-red-950 font-black text-lg">
+        <button id="btn-start-countdown" class="btn-baonifa w-full py-2.5 rounded-full text-red-950 font-black text-base">
           開始遊戲！
         </button>
       </div>
     </div>
 
-    <!-- 3. 遊戲進行畫面 (Screen 3) -->
+    <!-- 3. 遊戲進行畫面 (Screen 3) - 明亮喜氣色彩 -->
     <div id="screen-game" class="screen absolute inset-0 z-10 hidden flex flex-col justify-between">
       <!-- 頂部 HUD (放大數字，易於看清) -->
-      <div class="w-full pt-12 px-3 flex justify-between items-center z-20 pointer-events-none">
+      <div class="w-full pt-4 px-3 flex justify-between items-center z-20 pointer-events-none">
         <!-- 倒數時間 -->
-        <div class="flex items-center space-x-1.5 bg-black/75 px-3.5 py-1.5 rounded-full border-2 border-yellow-400 shadow-xl">
-          <span class="text-base">⏱️</span>
+        <div class="flex items-center space-x-1.5 bg-red-950/90 px-3 py-1 rounded-full border-2 border-yellow-400 shadow-lg">
+          <span class="text-sm">⏱️</span>
           <span class="text-xs text-yellow-300 font-black">時間</span>
-          <span id="hud-timer" class="font-mono text-xl font-black text-yellow-400">60</span>
+          <span id="hud-timer" class="font-mono text-lg font-black text-yellow-300">60</span>
           <span class="text-[10px] text-yellow-400 font-bold">秒</span>
         </div>
 
         <!-- 即時得分 -->
-        <div class="flex items-center space-x-1.5 bg-black/75 px-3.5 py-1.5 rounded-full border-2 border-yellow-400 shadow-xl">
-          <span class="text-base">⭐</span>
+        <div class="flex items-center space-x-1.5 bg-red-950/90 px-3 py-1 rounded-full border-2 border-yellow-400 shadow-lg">
+          <span class="text-sm">⭐</span>
           <span class="text-xs text-yellow-300 font-black">分數</span>
-          <span id="hud-score" class="font-mono text-xl font-black text-yellow-300">0</span>
+          <span id="hud-score" class="font-mono text-lg font-black text-yellow-300">0</span>
         </div>
       </div>
 
       <!-- 3秒倒數覆蓋層 -->
-      <div id="game-countdown-overlay" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/80 hidden pointer-events-none">
-        <div class="text-yellow-400 text-lg font-black tracking-widest mb-2">準備接寶發大財</div>
-        <div id="countdown-number" class="text-8xl font-black gold-emboss-text tracking-tighter drop-shadow-2xl">3</div>
-        <div class="text-sm text-yellow-200 mt-4 font-bold animate-pulse">左右滑動螢幕移動黑熊</div>
+      <div id="game-countdown-overlay" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/75 hidden pointer-events-none">
+        <div class="text-yellow-300 text-base font-black tracking-widest mb-1">準備接寶發大財</div>
+        <div id="countdown-number" class="text-7xl font-black gold-emboss-text tracking-tighter drop-shadow-2xl">3</div>
+        <div class="text-xs text-yellow-200 mt-3 font-bold animate-pulse">左右滑動螢幕移動黑熊</div>
       </div>
 
       <!-- 底部滑動指示條 -->
-      <div class="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 pointer-events-none bg-black/60 border border-yellow-400/60 text-yellow-300 font-bold text-[11px] px-4 py-1 rounded-full animate-pulse flex items-center space-x-1.5">
+      <div class="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 pointer-events-none bg-red-950/80 border border-yellow-400 text-yellow-300 font-bold text-[10px] px-3.5 py-0.5 rounded-full animate-pulse flex items-center space-x-1">
         <span>👈</span>
         <span>左右滑動黑熊接好運</span>
         <span>👉</span>
       </div>
 
-      <!-- HTML5 遊戲主畫布 -->
+      <!-- HTML5 遊戲主畫布 (禁止滾動) -->
       <canvas id="gameCanvas" class="absolute inset-0 w-full h-full z-10"></canvas>
     </div>
+
     <!-- 4. 結算畫面與個人歷程 (Screen 4) -->
     <div id="screen-result" class="screen absolute inset-0 z-20 hidden flex flex-col justify-between p-4 festive-bg overflow-y-auto text-white">
       <div class="mt-8 flex flex-col items-center">
         <!-- 結算抬頭 -->
-        <div class="px-4 py-0.5 rounded-full bg-yellow-400 text-red-950 font-black text-xs tracking-widest mb-1 shadow-md">
+        <div class="px-3.5 py-0.5 rounded-full bg-yellow-400 text-red-950 font-black text-[11px] tracking-widest mb-1 shadow-md">
           🧧 恭喜發財．迎春開運 🧧
         </div>
-        <h2 class="text-2xl font-black gold-emboss-text">本次成績結算</h2>
+        <h2 class="text-xl font-black gold-emboss-text">本次成績結算</h2>
 
         <!-- 本次得分大卡片 -->
-        <div class="w-full mt-2 bg-gradient-to-b from-red-950 to-black p-3.5 rounded-3xl border-2 border-yellow-400 shadow-2xl text-center relative overflow-hidden">
-          <div class="text-xs font-bold text-yellow-300">您本次接寶總分</div>
-          <div class="text-4xl font-black font-mono gold-emboss-text my-0.5" id="res-score">0</div>
-          <div class="text-[10px] text-stone-300 font-bold">總累積分數</div>
+        <div class="w-full mt-1.5 bg-gradient-to-b from-red-900 to-red-950 p-3 rounded-2xl border-2 border-yellow-400 shadow-xl text-center relative overflow-hidden">
+          <div class="text-[11px] font-bold text-yellow-300">您本次接寶總分</div>
+          <div class="text-3xl font-black font-mono gold-emboss-text my-0.5" id="res-score">0</div>
+          <div class="text-[9px] text-yellow-100 font-bold">總累積分數</div>
 
-          <div class="my-2 border-t border-yellow-500/40"></div>
+          <div class="my-1.5 border-t border-yellow-500/40"></div>
 
           <div class="flex items-center justify-around">
             <div>
-              <span class="text-[10px] text-gray-300 font-bold block">獲得抽獎券</span>
-              <span id="res-tickets" class="text-2xl font-black text-yellow-300 font-mono">+0</span>
-              <span class="text-xs font-bold text-yellow-400"> 張</span>
+              <span class="text-[9px] text-gray-200 font-bold block">獲得抽獎券</span>
+              <span id="res-tickets" class="text-xl font-black text-yellow-300 font-mono">+0</span>
+              <span class="text-[10px] font-bold text-yellow-400"> 張</span>
             </div>
-            <div class="w-0.5 h-8 bg-yellow-500/40"></div>
+            <div class="w-0.5 h-6 bg-yellow-500/40"></div>
             <div>
-              <span class="text-[10px] text-gray-300 font-bold block">累計總抽獎券</span>
-              <span id="res-total-tickets" class="text-2xl font-black text-amber-400 font-mono">0</span>
-              <span class="text-xs font-bold text-yellow-400"> 張</span>
+              <span class="text-[9px] text-gray-200 font-bold block">累計總抽獎券</span>
+              <span id="res-total-tickets" class="text-xl font-black text-amber-300 font-mono">0</span>
+              <span class="text-[10px] font-bold text-yellow-400"> 張</span>
             </div>
           </div>
         </div>
 
         <!-- 頁籤切換：個人紀錄 / TOP 10 英雄榜 -->
-        <div class="w-full mt-3 flex rounded-2xl bg-black/50 p-1 border border-yellow-500/40 text-xs">
-          <button id="tab-history" class="flex-1 py-1.5 rounded-xl bg-yellow-400 text-red-950 font-black transition">
+        <div class="w-full mt-2 flex rounded-xl bg-black/50 p-0.5 border border-yellow-500/40 text-[11px]">
+          <button id="tab-history" class="flex-1 py-1 rounded-lg bg-yellow-400 text-red-950 font-black transition">
             📜 個人歷史紀錄
           </button>
-          <button id="tab-rank" class="flex-1 py-1.5 rounded-xl text-yellow-300 font-black transition">
+          <button id="tab-rank" class="flex-1 py-1 rounded-lg text-yellow-300 font-black transition">
             🏆 TOP 10 英雄榜
           </button>
         </div>
 
         <!-- 歷史紀錄列表 -->
-        <div id="container-history" class="w-full mt-1.5 bg-black/40 p-2.5 rounded-2xl border border-yellow-500/30 max-h-28 overflow-y-auto text-xs">
-          <div class="text-yellow-400 font-bold mb-1 flex justify-between text-[11px]">
+        <div id="container-history" class="w-full mt-1 bg-black/40 p-2 rounded-xl border border-yellow-500/30 max-h-24 overflow-y-auto text-[11px]">
+          <div class="text-yellow-400 font-bold mb-1 flex justify-between text-[10px]">
             <span>門號：<span id="res-phone-mask" class="font-mono text-yellow-200">0912***678</span></span>
-            <span class="text-stone-400">最近 5 次紀錄</span>
+            <span class="text-stone-300">最近 5 次紀錄</span>
           </div>
-          <div id="history-items-list" class="space-y-1.5">
+          <div id="history-items-list" class="space-y-1">
             <!-- JS 動態插入 -->
           </div>
         </div>
 
         <!-- 排行榜 (預設隱藏) -->
-        <div id="container-rank" class="w-full mt-1.5 bg-black/40 p-2.5 rounded-2xl border border-yellow-500/30 max-h-28 overflow-y-auto text-xs hidden">
-          <div class="text-yellow-300 font-bold mb-1 flex justify-between text-[11px]">
+        <div id="container-rank" class="w-full mt-1 bg-black/40 p-2 rounded-xl border border-yellow-500/30 max-h-24 overflow-y-auto text-[11px] hidden">
+          <div class="text-yellow-300 font-bold mb-1 flex justify-between text-[10px]">
             <span>新春高手即時榜</span>
-            <span class="text-yellow-500">每小時更新</span>
+            <span class="text-yellow-400">每小時更新</span>
           </div>
           <div id="rank-items-list" class="space-y-1">
             <!-- JS 動態插入 -->
@@ -363,40 +361,39 @@
         </div>
 
         <!-- 包你發 APP 導引促銷區塊 -->
-        <div class="w-full mt-3 p-3 bg-gradient-to-r from-red-900 via-amber-900 to-red-950 rounded-2xl border border-yellow-400 shadow-xl flex items-center justify-between">
-          <div class="flex items-center space-x-2">
-            <div class="text-2xl">🎰</div>
+        <div class="w-full mt-2 p-2 bg-gradient-to-r from-red-800 via-amber-900 to-red-900 rounded-xl border border-yellow-400 shadow-md flex items-center justify-between">
+          <div class="flex items-center space-x-1.5">
+            <div class="text-xl">🎰</div>
             <div class="text-left">
-              <div class="text-xs font-black text-yellow-300">
+              <div class="text-[11px] font-black text-yellow-300">
                 下載包你發 APP
-                <span class="ml-1 text-[9px] bg-red-600 text-white px-1 py-0.5 rounded-full font-bold">送808</span>
+                <span class="ml-1 text-[8px] bg-red-600 text-white px-1 py-0.5 rounded-full font-bold">送808</span>
               </div>
-              <div class="text-[10px] text-stone-200 font-bold mt-0.5">
+              <div class="text-[9px] text-stone-200 font-bold">
                 綁定送 <strong class="text-yellow-300 font-mono">808金幣</strong> 或包鑽點數！
               </div>
             </div>
           </div>
-          <button onclick="handleAppRedirect()" class="px-3 py-1.5 bg-yellow-400 hover:bg-yellow-300 text-red-950 font-black text-xs rounded-full shadow-lg transition active:scale-95">
+          <button onclick="handleAppRedirect()" class="px-2.5 py-1 bg-yellow-400 hover:bg-yellow-300 text-red-950 font-black text-[10px] rounded-full shadow transition active:scale-95">
             前往領取
           </button>
         </div>
       </div>
 
       <!-- 結算按鈕 -->
-      <div class="mt-3 space-y-1.5 mb-1">
-        <button id="btn-play-again" class="btn-baonifa w-full py-3 rounded-full text-red-950 font-black text-lg">
+      <div class="mt-2 space-y-1 mb-2">
+        <button id="btn-play-again" class="btn-baonifa w-full py-2.5 rounded-full text-red-950 font-black text-base">
           🔄 再玩一次迎好運
         </button>
         <div class="text-center">
-          <button id="btn-query-another" class="text-xs font-bold text-yellow-300 underline py-0.5">
+          <button id="btn-query-another" class="text-[11px] font-bold text-yellow-300 underline py-0.5">
             換手機號碼查詢
           </button>
         </div>
       </div>
     </div>
-
     <!-- 訊息提示吐司 (Toast Modal) -->
-    <div id="toast-modal" class="fixed top-12 left-1/2 -translate-x-1/2 z-50 px-4 py-2 bg-yellow-400 text-red-950 font-black text-xs rounded-full shadow-2xl transition-all duration-300 opacity-0 pointer-events-none">
+    <div id="toast-modal" class="fixed top-10 left-1/2 -translate-x-1/2 z-50 px-4 py-1.5 bg-yellow-400 text-red-950 font-black text-xs rounded-full shadow-2xl transition-all duration-300 opacity-0 pointer-events-none">
       提示訊息
     </div>
 
@@ -734,6 +731,7 @@
       result: document.getElementById('screen-result')
     };
 
+    const topDecorations = document.getElementById('top-decorations');
     const phoneInput = document.getElementById('phone-input');
     const agreeCheckbox = document.getElementById('agree-checkbox');
     const btnSubmitAuth = document.getElementById('btn-submit-auth');
@@ -773,6 +771,8 @@
     btnStartCountdown.addEventListener('click', () => {
       screens.rules.classList.add('hidden');
       screens.game.classList.remove('hidden');
+      // 遊戲進行時隱藏春、福宮燈裝飾，避免遮擋財神爺
+      topDecorations.style.opacity = '0';
       initCanvasSize();
       runThreeSecondCountdown();
     });
@@ -780,6 +780,7 @@
     btnPlayAgain.addEventListener('click', () => {
       screens.result.classList.add('hidden');
       screens.game.classList.remove('hidden');
+      topDecorations.style.opacity = '0';
       initCanvasSize();
       runThreeSecondCountdown();
     });
@@ -787,6 +788,7 @@
     btnQueryAnother.addEventListener('click', () => {
       screens.result.classList.add('hidden');
       screens.auth.classList.remove('hidden');
+      topDecorations.style.opacity = '1';
       phoneInput.value = '';
       agreeCheckbox.checked = false;
       checkFormValidity();
@@ -799,15 +801,15 @@
     const containerRank = document.getElementById('container-rank');
 
     tabHistory.addEventListener('click', () => {
-      tabHistory.className = "flex-1 py-1.5 rounded-xl bg-yellow-400 text-red-950 font-black transition";
-      tabRank.className = "flex-1 py-1.5 rounded-xl text-yellow-300 font-black transition";
+      tabHistory.className = "flex-1 py-1 rounded-lg bg-yellow-400 text-red-950 font-black transition";
+      tabRank.className = "flex-1 py-1 rounded-lg text-yellow-300 font-black transition";
       containerHistory.classList.remove('hidden');
       containerRank.classList.add('hidden');
     });
 
     tabRank.addEventListener('click', () => {
-      tabRank.className = "flex-1 py-1.5 rounded-xl bg-yellow-400 text-red-950 font-black transition";
-      tabHistory.className = "flex-1 py-1.5 rounded-xl text-yellow-300 font-black transition";
+      tabRank.className = "flex-1 py-1 rounded-lg bg-yellow-400 text-red-950 font-black transition";
+      tabHistory.className = "flex-1 py-1 rounded-lg text-yellow-300 font-black transition";
       containerRank.classList.remove('hidden');
       containerHistory.classList.add('hidden');
     });
@@ -823,8 +825,9 @@
         document.body.removeChild(dummy);
       } catch (e) {}
     }
+
     // ==========================================================
-    // 4. 實體與畫布控制系統
+    // 4. 實體與畫布控制系統 (防止視窗拖動與滾動)
     // ==========================================================
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -842,7 +845,7 @@
 
     const godOfWealth = {
       x: 0,
-      y: 35,
+      y: 25,
       width: 80,
       height: 90,
       dir: 1,
@@ -870,40 +873,55 @@
       canvas.width = container.clientWidth;
       canvas.height = container.clientHeight;
       
-      player.width = Math.min(canvas.width * 0.27, 105);
+      player.width = Math.min(canvas.width * 0.28, 105);
       player.height = player.width * 1.1;
       player.x = (canvas.width - player.width) / 2;
       player.targetX = player.x;
-      player.y = canvas.height - player.height - 30;
+      player.y = canvas.height - player.height - 25;
 
       godOfWealth.width = Math.min(canvas.width * 0.23, 90);
       godOfWealth.height = godOfWealth.width * 1.1;
       godOfWealth.x = (canvas.width - godOfWealth.width) / 2;
     }
 
-    // 左右觸控與滑鼠拖曳
+    // 左右觸控與滑鼠拖曳 (徹底防止視窗被拖動)
     let isTouching = false;
     function updatePlayerPosition(clientX) {
       const rect = canvas.getBoundingClientRect();
       const localX = (clientX - rect.left) / 1.25; // 補償 zoom 1.25 的座標比率
       player.targetX = localX - player.width / 2;
       
-      if (player.targetX < 10) player.targetX = 10;
-      if (player.targetX + player.width > canvas.width - 10) {
-        player.targetX = canvas.width - player.width - 10;
+      if (player.targetX < 8) player.targetX = 8;
+      if (player.targetX + player.width > canvas.width - 8) {
+        player.targetX = canvas.width - player.width - 8;
       }
     }
 
     canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault(); // 阻止整個網頁被拉動或下拉回彈
       isTouching = true;
-      updatePlayerPosition(e.touches[0].clientX);
-    }, { passive: true });
+      if (e.touches.length > 0) {
+        updatePlayerPosition(e.touches[0].clientX);
+      }
+    }, { passive: false });
 
     canvas.addEventListener('touchmove', (e) => {
-      if (isTouching) updatePlayerPosition(e.touches[0].clientX);
-    }, { passive: true });
+      e.preventDefault(); // 阻止整個網頁被拉動
+      if (isTouching && e.touches.length > 0) {
+        updatePlayerPosition(e.touches[0].clientX);
+      }
+    }, { passive: false });
 
-    canvas.addEventListener('touchend', () => { isTouching = false; });
+    canvas.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      isTouching = false;
+    }, { passive: false });
+
+    canvas.addEventListener('touchcancel', (e) => {
+      e.preventDefault();
+      isTouching = false;
+    }, { passive: false });
+
     canvas.addEventListener('mousedown', (e) => {
       isTouching = true;
       updatePlayerPosition(e.clientX);
@@ -912,198 +930,27 @@
       if (isTouching) updatePlayerPosition(e.clientX);
     });
     window.addEventListener('mouseup', () => { isTouching = false; });
-    // ==========================================================
-    // 5. 角色與特效動態繪製
-    // ==========================================================
-    function renderGodOfWealth(time) {
-      godOfWealth.floatY = Math.sin(time * 0.005) * 5;
-      godOfWealth.sway = Math.sin(time * 0.006) * 0.05;
 
-      ctx.save();
-      ctx.translate(godOfWealth.x + godOfWealth.width / 2, godOfWealth.y + godOfWealth.height / 2 + godOfWealth.floatY);
-      ctx.rotate(godOfWealth.sway);
-      
-      // 依移動方向翻轉
-      if (godOfWealth.dir < 0) {
-        ctx.scale(-1, 1);
-      }
-
-      ctx.drawImage(
-        ASSET_IMAGES.caishen,
-        -godOfWealth.width / 2,
-        -godOfWealth.height / 2,
-        godOfWealth.width,
-        godOfWealth.height
-      );
-
-      ctx.restore();
-    }
-
-    function renderPlayerBear() {
-      const dx = player.targetX - player.x;
-      player.x += dx * 0.32;
-      player.tilt = dx * 0.0035;
-
-      ctx.save();
-      ctx.translate(player.x + player.width / 2, player.y + player.height / 2 - player.bounce);
-      ctx.rotate(player.tilt);
-
-      // 接寶成功瞬間放大彈跳反饋
-      const scaleEffect = player.celebrateTimer > 0 ? 1.18 : 1.0;
-      ctx.scale(scaleEffect, scaleEffect);
-
-      // 接寶金光環
-      if (player.celebrateTimer > 0) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(0, 0, player.width * 0.65, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 215, 0, 0.35)';
-        ctx.fill();
-        ctx.restore();
-      }
-
-      ctx.drawImage(
-        ASSET_IMAGES.bear,
-        -player.width / 2,
-        -player.height / 2,
-        player.width,
-        player.height
-      );
-
-      ctx.restore();
-    }
-
-    function renderSparrow(s) {
-      ctx.save();
-      ctx.translate(s.x, s.y);
-      
-      if (s.speedX < 0) {
-        ctx.scale(-1, 1);
-      }
-
-      const wingFlap = Math.sin(Date.now() * 0.025) * 5;
-      ctx.translate(0, wingFlap);
-
-      const spWidth = 72;
-      const spHeight = 60;
-
-      ctx.drawImage(
-        ASSET_IMAGES.sparrow,
-        -spWidth / 2,
-        -spHeight / 2,
-        spWidth,
-        spHeight
-      );
-
-      ctx.restore();
-    }
-
-    function renderFallingItem(item) {
-      ctx.save();
-      ctx.translate(item.x, item.y);
-      ctx.rotate(item.angle || 0);
-
-      const t = item.type;
-
-      if (t === ITEM_CONFIG.COIN) {
-        ctx.fillStyle = '#FFD700';
-        ctx.beginPath();
-        ctx.arc(0, 0, t.radius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = '#FF8F00';
-        ctx.lineWidth = 2.5;
-        ctx.stroke();
-        ctx.fillStyle = '#B26A00';
-        ctx.fillRect(-3.5, -3.5, 7, 7);
-      } else if (t === ITEM_CONFIG.RED_ENV) {
-        ctx.fillStyle = '#D32F2F';
-        ctx.fillRect(-12, -16, 24, 32);
-        ctx.strokeStyle = '#FFD700';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(-12, -16, 24, 32);
-        ctx.fillStyle = '#FFD700';
-        ctx.beginPath();
-        ctx.arc(0, -5, 5.5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#B71C1C';
-        ctx.font = 'bold 9px sans-serif';
-        ctx.fillText('吉', -4.5, -2);
-      } else if (t === ITEM_CONFIG.INGOT) {
-        ctx.fillStyle = '#FFB300';
-        ctx.beginPath();
-        ctx.arc(0, 2, 17, 0, Math.PI);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(0, 0, 9, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#FFE082';
-        ctx.beginPath();
-        ctx.arc(0, -2, 4.5, 0, Math.PI * 2);
-        ctx.fill();
-      } else if (t === ITEM_CONFIG.GOLD_BRICK) {
-        ctx.fillStyle = '#FF8F00';
-        ctx.fillRect(-22, -13, 44, 26);
-        ctx.strokeStyle = '#FFF59D';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(-22, -13, 44, 26);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-        ctx.fillRect(-18, -10, 36, 4.5);
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = '900 12px sans-serif';
-        ctx.fillText('發財', -12, 5);
-      }
-
-      ctx.restore();
-    }
-
-    function triggerCatchEffects(x, y, score, isBrick = false) {
-      floatingTexts.push({
-        x: x,
-        y: y - 12,
-        text: `+${score}`,
-        color: isBrick ? '#FFEE58' : '#FFF59D',
-        size: isBrick ? 28 : 22,
-        alpha: 1,
-        vy: -2.2
-      });
-
-      const count = isBrick ? 20 : 12;
-      for (let i = 0; i < count; i++) {
-        const speed = Math.random() * 4.5 + 2;
-        const angle = Math.random() * Math.PI * 2;
-        particles.push({
-          x: x,
-          y: y,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed - 2.2,
-          radius: Math.random() * 3.5 + 2,
-          color: ['#FFD700', '#FF7043', '#FFF59D', '#FFCA28'][Math.floor(Math.random() * 4)],
-          alpha: 1,
-          decay: Math.random() * 0.03 + 0.02
-        });
-      }
-
-      player.bounce = isBrick ? 15 : 9;
-      player.celebrateTimer = 10;
-    }
-
+    // 渲染更明亮、喜慶溫潤的遊戲背景
     function renderFestiveBackground() {
       const bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      bgGrad.addColorStop(0, '#540810');
-      bgGrad.addColorStop(0.5, '#2e0207');
-      bgGrad.addColorStop(1, '#150003');
+      // 由暗黑調改為明亮富貴的錦鯉正紅與宮廷金紅漸層
+      bgGrad.addColorStop(0, '#a8161f');
+      bgGrad.addColorStop(0.4, '#870d15');
+      bgGrad.addColorStop(1, '#520409');
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.save();
-      ctx.fillStyle = 'rgba(255, 215, 0, 0.05)';
+      // 金黃祥雲微光
+      ctx.fillStyle = 'rgba(255, 235, 59, 0.08)';
       for (let i = 0; i < 4; i++) {
         const cx = ((i * 140 + Date.now() * 0.015) % (canvas.width + 120)) - 60;
-        const cy = 100 + i * 110;
+        const cy = 90 + i * 110;
         ctx.beginPath();
-        ctx.arc(cx, cy, 38, 0, Math.PI * 2);
-        ctx.arc(cx + 28, cy - 10, 32, 0, Math.PI * 2);
-        ctx.arc(cx + 56, cy, 38, 0, Math.PI * 2);
+        ctx.arc(cx, cy, 40, 0, Math.PI * 2);
+        ctx.arc(cx + 30, cy - 10, 35, 0, Math.PI * 2);
+        ctx.arc(cx + 60, cy, 40, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.restore();
@@ -1335,6 +1182,9 @@
       state.isPlaying = false;
       clearInterval(timerInterval);
       cancelAnimationFrame(gameLoopId);
+
+      // 結算後恢復頂部春、福燈籠顯示
+      topDecorations.style.opacity = '1';
 
       const currentTickets = calculateLotteryTickets(state.score);
       const timestamp = new Date();
